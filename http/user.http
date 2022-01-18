@@ -1,0 +1,34 @@
+### Get request with a header
+POST http://localhost:8080/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test@test.com",
+  "password": "123"
+}
+
+
+###
+POST http://localhost:8080/users
+#Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNTUyMTQ3ODA5fQ.tfKJJV4ifz3gd_mV5jFXkNDYatFf8nDV900k65r1p7qLXAHSAZ0Iy8LrJTKuqOZYSFX-v9qCQ0GjCrqKwpM22Q
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "",
+  "lastName": "Doe",
+  "email": "test@test.com",
+  "password": "123"
+}
+
+###
+
+GET http://localhost:8080/users/e2GpCS0BMsN5Je5gpvnx4jToxuJvQZDpX6uK
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNTUyMTQ3ODA5fQ.tfKJJV4ifz3gd_mV5jFXkNDYatFf8nDV900k65r1p7qLXAHSAZ0Iy8LrJTKuqOZYSFX-v9qCQ0GjCrqKwpM22Q
+Content-Type: application/json
+Accept: application/json
+
+###
+
+
