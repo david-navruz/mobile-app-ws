@@ -1,6 +1,5 @@
 package com.appsdeveloperblog.app.ws.ui.controller;
 
-
 import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
 import com.appsdeveloperblog.app.ws.service.UserService;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
@@ -15,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("users")
+@RequestMapping("users")    // http://localhost:8080/mobile-app-ws/users
 public class UserController {
 
     @Autowired
@@ -63,6 +65,23 @@ public class UserController {
         OperationStatusModel returnValue = new OperationStatusModel();
         returnValue.setOperationName(RequestOperationName.DELETE.name());
         returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return returnValue;
+    }
+
+    @GetMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "limit", defaultValue = "5") int limit) throws UserServiceException {
+        List<UserRest> returnValue = new ArrayList<>();
+        List<UserDto> users = userService.getUsers(page, limit);
+        if(users == null){
+            throw new UserServiceException("User Exception");
+        }
+        for(UserDto dto : users){
+            UserRest userRest = new UserRest();
+            BeanUtils.copyProperties(dto, userRest);
+            returnValue.add(userRest);
+        }
         return returnValue;
     }
 
