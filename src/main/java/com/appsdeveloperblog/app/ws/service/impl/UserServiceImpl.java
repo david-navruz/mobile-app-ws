@@ -5,7 +5,9 @@ import com.appsdeveloperblog.app.ws.io.entity.UserEntity;
 import com.appsdeveloperblog.app.ws.io.repository.UserRepository;
 import com.appsdeveloperblog.app.ws.service.UserService;
 import com.appsdeveloperblog.app.ws.shared.Utils;
+import com.appsdeveloperblog.app.ws.shared.dto.AddressDto;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -32,22 +34,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         // Cheking if the user already exists
-        UserEntity storedUserDetails = userRepository.findByEmail(userDto.getEmail());
-        if (storedUserDetails != null) {
+        if(userRepository.findByEmail(userDto.getEmail()) != null){
             throw new RuntimeException("Record already exists;");
         }
-        // Converting UserDto into UserEntity
+        // Looping on the list of addresses of the given UserDto
+        for (int i=0;i<userDto.getAddresses().size(); i++){
+            AddressDto address = userDto.getAddresses().get(i);
+            address.setUserDetails(userDto);
+            address.setAddressId(utils.generateAddressId(30));
+            userDto.getAddresses().set(i, address);
+        }
+        // Creating the User entity
         UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(userDto, userEntity);
+        // Copying the values from UserDto to UserEntity
+        ModelMapper modelMapper = new ModelMapper();
+        userEntity = modelMapper.map(userDto, UserEntity.class);
+
         // Generating userId and password
-        String publicUserId = utils.generatedUserId(36);
+        String publicUserId = utils.generateUserId(36);
         userEntity.setUserId(publicUserId);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         // Saving the object to the DB
         UserEntity savedUserDetails = userRepository.save(userEntity);
         // Returning back the saved object as an UserDto
-        UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(savedUserDetails, returnValue);
+        UserDto returnValue = modelMapper.map(savedUserDetails, UserDto.class);
         return returnValue;
     }
 

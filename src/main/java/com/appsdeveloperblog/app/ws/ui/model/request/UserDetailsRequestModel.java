@@ -1,18 +1,18 @@
-package com.appsdeveloperblog.app.ws.ui.model.response;
+package com.appsdeveloperblog.app.ws.ui.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRest {
-    private String userId;
+public class UserDetailsRequestModel {
     private String firstName;
     private String lastName;
     private String email;
-    private List<AddressesRest> addresses;
+    private String password;
+    private List<AddressRequestModel> addresses;
+
 }

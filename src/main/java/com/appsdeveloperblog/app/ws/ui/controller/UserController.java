@@ -1,19 +1,22 @@
 package com.appsdeveloperblog.app.ws.ui.controller;
 
 import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
+import com.appsdeveloperblog.app.ws.service.AddressService;
 import com.appsdeveloperblog.app.ws.service.UserService;
+import com.appsdeveloperblog.app.ws.shared.dto.AddressDto;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
 import com.appsdeveloperblog.app.ws.ui.model.request.RequestOperationName;
-import com.appsdeveloperblog.app.ws.ui.model.request.UserDetails;
-import com.appsdeveloperblog.app.ws.ui.model.response.ErrorMessages;
-import com.appsdeveloperblog.app.ws.ui.model.response.OperationStatusModel;
-import com.appsdeveloperblog.app.ws.ui.model.response.RequestOperationStatus;
-import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
+import com.appsdeveloperblog.app.ws.ui.model.request.UserDetailsRequestModel;
+import com.appsdeveloperblog.app.ws.ui.model.response.*;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AddressService addressService;
 
     @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public UserRest getUser(@PathVariable String id) {
@@ -34,13 +39,16 @@ public class UserController {
 
     @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserRest createUser(@RequestBody UserDetails userDetails) throws UserServiceException {
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws UserServiceException {
         UserRest returnValue = new UserRest();
         if (userDetails.getFirstName().isEmpty()) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetails, userDto);
+        // UserDto userDto = new UserDto();
+        // BeanUtils.copyProperties(userDetails, userDto);
+        // Mapping Dto with Modelmapper
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
         UserDto createdUser = userService.createUser(userDto);
         BeanUtils.copyProperties(createdUser, returnValue);
         return returnValue;
@@ -48,7 +56,7 @@ public class UserController {
 
     @PutMapping(path = "/{id}", consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetails userDetails) {
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnValue = new UserRest();
         UserDto userDto = new UserDto();
         // Copying the values from userDetails into an UserDto
@@ -84,6 +92,26 @@ public class UserController {
         }
         return returnValue;
     }
+
+    // http://localhost:8080/mobile-app-ws/users/xxxxxxxxxxx/addresses
+    @GetMapping(path = "/{id}/addresses", consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public List<AddressesRest> getUserAddresses(@PathVariable String id) throws UserServiceException {
+        List<AddressesRest> returnValue = new ArrayList<>();
+        // Getting the list of addresses by UserId
+        List<AddressDto> addressDtos = addressService.getAddressesById(id);
+        ModelMapper modelMapper = new ModelMapper();
+        if (addressDtos != null && !addressDtos.isEmpty()) {
+            Type listType = new TypeToken<List<AddressesRest>>() {
+            }.getType();
+            returnValue = modelMapper.map(addressDtos, listType);
+        }
+        return returnValue;
+    }
+
+
+
+
 
 
 }

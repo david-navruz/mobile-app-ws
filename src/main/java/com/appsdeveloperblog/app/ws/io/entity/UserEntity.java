@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "users")
-public class UserEntity {
+public class UserEntity implements Serializable {
+
     @Id
     @GeneratedValue
     private long id;
@@ -35,7 +35,10 @@ public class UserEntity {
 
     private String emailVerificationToken;
 
-    @Column(nullable = false)
-    private Boolean emailVerificationStatus = false;
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private Boolean emailVerificationStatus;
+
+    @OneToMany(mappedBy = "userDetails", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<AddressEntity> addresses;
 
 }
