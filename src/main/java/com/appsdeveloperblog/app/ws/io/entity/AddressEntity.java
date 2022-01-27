@@ -1,44 +1,109 @@
 package com.appsdeveloperblog.app.ws.io.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import javax.persistence.*;
 import java.io.Serializable;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity(name = "addresses")
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity(name="addresses")
 public class AddressEntity implements Serializable {
 
-    @Id
-    @GeneratedValue
-    private long id;
+	private static final long serialVersionUID = 7809200551672852690L;
+	
+	@Id
+	@GeneratedValue
+	private long id;
+	
+	@Column(length=30, nullable=false)
+	private String addressId;
+	
+	@Column(length=15, nullable=false)
+	private String city;
+	
+	@Column(length=15, nullable=false)
+	private String country;
+	
+	@Column(length=100, nullable=false)
+	private String streetName;
+	
+	@Column(length=7, nullable=false)
+	private String postalCode;
+	
+	@Column(length=10, nullable=false)
+	private String type;
+	
+	@ManyToOne
+	@JoinColumn(name="users_id")
+	private UserEntity userDetails;
 
-    @Column(length = 30, nullable = false)
-    private String addressId;
+	public long getId() {
+		return id;
+	}
 
-    @Column(length = 15, nullable = false)
-    private String city;
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    @Column(length = 15, nullable = false)
-    private String country;
+	public String getAddressId() {
+		return addressId;
+	}
 
-    @Column(length = 100, nullable = false)
-    private String streetName;
+	public void setAddressId(String addressId) {
+		this.addressId = addressId;
+	}
 
-    @Column(length = 7, nullable = false)
-    private String postalCode;
+	public String getCity() {
+		return city;
+	}
 
-    @Column(length = 10, nullable = false)
-    private String type;
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private UserEntity userDetails;
+	public String getCountry() {
+		return country;
+	}
 
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
+	public String getStreetName() {
+		return streetName;
+	}
 
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public UserEntity getUserDetails() {
+		return userDetails;
+	}
+
+	public void setUserDetails(UserEntity userDetails) {
+		this.userDetails = userDetails;
+	}
+	
+	
 
 }

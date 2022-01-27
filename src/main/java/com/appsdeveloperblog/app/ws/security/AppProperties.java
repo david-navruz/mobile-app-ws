@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AppProperties {
-    @Autowired
-    private Environment environment;
 
-    public String getTokenSecret(){
-        return environment.getProperty("token.secret");
-
-    }
+	@Autowired
+	private Environment env;
+	
+	public String getTokenSecret()
+	{
+		return env.getProperty("tokenSecret");
+	}
 }
